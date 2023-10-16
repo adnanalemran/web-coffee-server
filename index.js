@@ -81,12 +81,40 @@ async function run() {
         })
 
         //user relatete apis
+        app.get('/user',async(req,res)=>{
+            const cursor = userCallaction.find();
+            const users = await cursor.toArray();
+            res.send(users);
+        })
+
+
         app.post('/user', async (req, res) => {
             const user = req.body;
             console.log(user);
             const result = await userCallaction.insertOne(user);
             res.send(result)
         })
+        app.patch('user',async(req,res)=>{
+            const user = req.body;
+            const filter = {email:user.email}
+            const updateDoc = {
+                $set:{
+                    lastLoggedAt:user.lastLoggedAt
+                }
+            }
+            const result = await userCallaction.updateOne(filter,updateDoc)
+            res.send(result);
+        })
+ 
+
+        app.delete('/user/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await userCallaction.deleteOne(query);  
+            res.send(result);
+          });
+
+
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
